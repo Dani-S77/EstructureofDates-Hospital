@@ -39,6 +39,14 @@ public class Paciente {
     public String getDireccion() {return direccion;}
     public void setDireccion(String direccion) {this.direccion = direccion;}
 
+    public String getTelefono() {return telefono;}
+    public void setTelefono(String telefono) {this.telefono = telefono;}
 
+    public String getHistorialMedico() {return historialMedico;}
+    public void setHistorialMedico(String nota) { this.historialMedico += nota + "\n";}
 
+   @Override
+    public String toString(){
+        return "Paciente: "+nombre+ " "+apellido+"(ID:"+id+")";
+    }
 }
