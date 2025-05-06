@@ -66,7 +66,6 @@ public class Cita {
     public String toString(){
         return "Cita: "+id+"-Paciente: "+paciente.getNombre()+
                 "-Doctor: "+doctor.getNombre()+ "-Fecha: "+fecha;
-        //prueba
     }
 }
 
