@@ -1,17 +1,18 @@
 package Modelo;
 
-import java.time.LocalDateTime;
+
+import java.time.LocalDate;
 
 public class Tratamiento {
     private String id;
     private Paciente paciente;
     private String descripcion;
-    private LocalDateTime fechaInicio;
-    private LocalDateTime fechaFin;
+    private LocalDate fechaInicio;
+    private LocalDate fechaFin;
     private String medicamentos;
     private String indicaciones;
 
-    public Tratamiento(String id, Paciente paciente,String descripcion, LocalDateTime fechaInicio,LocalDateTime fechaFin,
+    public Tratamiento(String id, Paciente paciente,String descripcion, LocalDate fechaInicio,LocalDate fechaFin,
                        String medicamentos,String indicaciones) {
         this.id=id;
         this.paciente=paciente;
@@ -31,11 +32,11 @@ public class Tratamiento {
     public String getDescripcion() {return descripcion;}
     public void setDescripcion(String descripcion) {this.descripcion = descripcion;}
 
-    public LocalDateTime getFechaInicio(){return  fechaInicio;}
-    public void setFechaInicio(LocalDateTime fechaInicio) {this.fechaInicio = fechaInicio;}
+    public LocalDate getFechaInicio(){return  fechaInicio;}
+    public void setFechaInicio(LocalDate fechaInicio) {this.fechaInicio = fechaInicio;}
 
-    public LocalDateTime getFechaFin() {return fechaFin;}
-    public void setFechaFin(LocalDateTime fechaFin) {this.fechaFin = fechaFin;}
+    public LocalDate getFechaFin() {return fechaFin;}
+    public void setFechaFin(LocalDate fechaFin) {this.fechaFin = fechaFin;}
 
     public String getIndicaciones(){return indicaciones;}
     public void setIndicaciones(String indicaciones){this.indicaciones=indicaciones;}

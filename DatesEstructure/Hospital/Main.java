@@ -2,8 +2,11 @@
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 import Modelo.Doctor;
 import Modelo.Paciente;
+import Modelo.Tratamiento;
 
 import javax.swing.JOptionPane;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 
 public class Main {
     public static void main(String[] args) {
@@ -13,6 +16,7 @@ public class Main {
         int OpcSelec;
         Paciente nuevoPaciente = null;
         Doctor doc = null;
+        Tratamiento tratamiento = null;
 
         do {
             OpcSelec = JOptionPane.showOptionDialog(
@@ -27,12 +31,16 @@ public class Main {
 
             switch (OpcSelec) { ///registrar paciente
                 case 0:
-
-                    String idDStr = null ;
+/*
+Este apartado es para identificar donde empieza el registro del doctor
+ */
+                    //Registro Doctor
+                    String idDStr = null;
                     int idDoc = -1;
                     while (idDoc < 0) {
                         idDStr = JOptionPane.showInputDialog(null, "Ingrese el ID del doctor:", "Registro de doctor", JOptionPane.PLAIN_MESSAGE);
-                        if (idDStr == null || idDStr.trim().isEmpty() ) JOptionPane.showMessageDialog(null, "El ID del doctor es incorrecto.", "Error", JOptionPane.ERROR_MESSAGE);
+                        if (idDStr == null || idDStr.trim().isEmpty())
+                            JOptionPane.showMessageDialog(null, "El ID del doctor es incorrecto.", "Error", JOptionPane.ERROR_MESSAGE);
                         try {
                             idDoc = Integer.parseInt(idDStr);
                             if (idDoc < 0) {
@@ -46,7 +54,8 @@ public class Main {
                     String nombreD = null;
                     while (nombreD == null || nombreD.trim().isEmpty()) {
                         nombreD = JOptionPane.showInputDialog(null, "Ingrese el nombre del doctor:", "Registro de Doctor", JOptionPane.PLAIN_MESSAGE);
-                        if (nombreD == null || nombreD.trim().isEmpty()) JOptionPane.showMessageDialog(null, "Dato ingresado incorrecto.", "Error", JOptionPane.ERROR_MESSAGE);
+                        if (nombreD == null || nombreD.trim().isEmpty())
+                            JOptionPane.showMessageDialog(null, "Dato ingresado incorrecto.", "Error", JOptionPane.ERROR_MESSAGE);
                     }
 
                     String apellidoD = null;
@@ -83,12 +92,19 @@ public class Main {
                         }
                     }
 
+                    doc = new Doctor(idDStr, nombreD, apellidoD, especialidad, telefonoDStr);
+
+/*
+Este apartado es para saber donde inicial el registro del doctor
+ */
+                    //Registro Doctor
                     int id = -1;
                     String idStr = null;
 
                     while (id < 0) {
                         idStr = JOptionPane.showInputDialog(null, "Ingrese el ID del paciente:", "Registro de Paciente", JOptionPane.PLAIN_MESSAGE);
-                        if (idStr == null || idStr.trim().isEmpty() ) JOptionPane.showMessageDialog(null, "El ID del paciente es incorrecto.", "Error", JOptionPane.ERROR_MESSAGE);
+                        if (idStr == null || idStr.trim().isEmpty())
+                            JOptionPane.showMessageDialog(null, "El ID del paciente es incorrecto.", "Error", JOptionPane.ERROR_MESSAGE);
                         try {
                             id = Integer.parseInt(idStr);
                             if (id < 0) {
@@ -103,7 +119,8 @@ public class Main {
                     String nombre = null;
                     while (nombre == null || nombre.trim().isEmpty()) {
                         nombre = JOptionPane.showInputDialog(null, "Ingrese el nombre del paciente:", "Registro de Paciente", JOptionPane.PLAIN_MESSAGE);
-                        if (nombre == null || nombre.trim().isEmpty()) JOptionPane.showMessageDialog(null, "Dato ingresado incorrecto.", "Error", JOptionPane.ERROR_MESSAGE);
+                        if (nombre == null || nombre.trim().isEmpty())
+                            JOptionPane.showMessageDialog(null, "Dato ingresado incorrecto.", "Error", JOptionPane.ERROR_MESSAGE);
                     }
 
                     String apellido = null;
@@ -160,13 +177,85 @@ public class Main {
                             JOptionPane.showMessageDialog(null, "Dato ingresado incorrecto.", "Error", JOptionPane.ERROR_MESSAGE);
                     }
 
-                    nuevoPaciente = new Paciente(idStr,nombre,apellido,edad,genero,direccion,telefono);
+                    nuevoPaciente = new Paciente(idStr, nombre, apellido, edad, genero, direccion, telefono);
+/*
+Este apartado es para saber donde inicial el registro del doctor
+ */
+                    //Registro tratamiento
 
+                    String idT = null;
+                    int idInt = -1;
+                    while (idT == null || idT.trim().isEmpty()) {
+                        idT = JOptionPane.showInputDialog(null, "Ingrese el ID del tratamiento (único):", "Registro de Tratamiento", JOptionPane.PLAIN_MESSAGE);
+                        if (idT.trim().isEmpty() || idT == null) {
+                            JOptionPane.showMessageDialog(null, "Dato ingresado incorrecto.", "Error", JOptionPane.ERROR_MESSAGE);
+                            try {
+                                idInt = Integer.parseInt(idT);
+                                if (idInt < 0) {
+                                    JOptionPane.showMessageDialog(null, "El ID no puede ser negativo.", "Error", JOptionPane.ERROR_MESSAGE);
+                                }
+                            } catch (NumberFormatException e) {
+                                JOptionPane.showMessageDialog(null, "El ID debe ser un número entero válido.", "Error", JOptionPane.ERROR_MESSAGE);
+                            }
+                        }
+                    }
 
+                    String descripcion = null;
+                    while (descripcion == null || descripcion.trim().isEmpty()) {
+                        descripcion = JOptionPane.showInputDialog(null, "Ingrese la descripción del tratamiento:", "Registro de Tratamiento", JOptionPane.PLAIN_MESSAGE);
+                        if (descripcion.trim().isEmpty() || descripcion == null) {
+                            JOptionPane.showMessageDialog(null, "Dato ingresado incorrecto.", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
 
-                break;
+                    LocalDate fechaIni = null;
+                    while (fechaIni == null) {
+                        String fechaStr = JOptionPane.showInputDialog(null, "Ingrese la fecha de inicio del tratamiento" + " (formato yyyy-MM-dd):", "Registro de Tratamiento", JOptionPane.PLAIN_MESSAGE);
+                        if (fechaStr.trim().isEmpty() || fechaStr == null) {
+                            JOptionPane.showMessageDialog(null, "Dato ingresado incorrecto.", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                        try {
+                            fechaIni = LocalDate.parse(fechaStr);
+                        } catch (DateTimeParseException e) {
+                            JOptionPane.showMessageDialog(null, "Formato de fecha incorrecto. Use yyyy-MM-dd.", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+
+                    LocalDate fechaFnl = null;
+                    while (fechaFnl == null) {
+                        String fechaStr = JOptionPane.showInputDialog(null, "Ingrese la fecha de finalizacion del tratamiento" + " (formato yyyy-MM-dd):", "Registro de Tratamiento", JOptionPane.PLAIN_MESSAGE);
+                        if (fechaStr.trim().isEmpty() || fechaStr == null) {
+                            JOptionPane.showMessageDialog(null, "Dato ingresado incorrecto.", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                        try {
+                            fechaFnl = LocalDate.parse(fechaStr);
+                        } catch (DateTimeParseException e) {
+                            JOptionPane.showMessageDialog(null, "Formato de fecha incorrecto. Use yyyy-MM-dd.", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+
+                    String medicamentos = null;
+                    while (medicamentos == null || medicamentos.trim().isEmpty()) {
+                        medicamentos = JOptionPane.showInputDialog(null, "Ingrese los medicamentos del tratamiento:", "Registro de Tratamiento", JOptionPane.PLAIN_MESSAGE);
+                        if (medicamentos.trim().isEmpty() || medicamentos == null) {
+                            JOptionPane.showMessageDialog(null, "Dato ingresado incorrecto.", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+
+                    String indicaciones = null;
+                    while (indicaciones == null || indicaciones.trim().isEmpty()) {
+                        indicaciones = JOptionPane.showInputDialog(null, "Ingrese las indicaciones del tratamiento:", "Registro de Tratamiento", JOptionPane.PLAIN_MESSAGE);
+                        if (indicaciones.trim().isEmpty() || indicaciones == null) {
+                            JOptionPane.showMessageDialog(null, "Dato ingresado incorrecto.", "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+
+                    tratamiento = new Tratamiento(idT, nuevoPaciente,
+                            descripcion, fechaIni, fechaFnl, medicamentos, indicaciones);
+
+                    break;
                 case 1: //ver paciente
-                    JOptionPane.showMessageDialog(null,nuevoPaciente.toString());
+                    JOptionPane.showMessageDialog(null, nuevoPaciente.toString());
                     break;
                 case 2:
                     JOptionPane.showMessageDialog(null, "Saliendo del programa.");
@@ -174,6 +263,7 @@ public class Main {
                 default:
                     JOptionPane.showMessageDialog(null, "Opcion no valida");
             }
+
         } while (OpcSelec != 2);
 
 
