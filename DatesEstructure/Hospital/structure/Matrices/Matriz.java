@@ -24,6 +24,11 @@ public class Matriz<T> {
     public int getColumnas() {return columnas;}
 
     public void imprimir(){
-        for(int i= 0;)
+        for(int i= 0;i<filas;i++){
+             for (int j=0;i<columnas;j++){
+                 System.out.println(datos[i][j]+"\t");
+             }
+            System.out.println();
+        }
     }
 }
