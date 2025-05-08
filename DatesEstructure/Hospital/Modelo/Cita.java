@@ -8,15 +8,13 @@ public class Cita {
     private Doctor doctor;
     private LocalDateTime fecha;
     private String motivo;
-    private boolean atendida;
 
-    public Cita(String id, Paciente paciente, Doctor doctor, LocalDateTime fecha, String motivo, boolean atendida) {
+    public Cita(String id, Paciente paciente, Doctor doctor, LocalDateTime fecha, String motivo) {
         this.id = id;
         this.paciente = paciente;
         this.doctor = doctor;
         this.fecha = fecha;
         this.motivo = motivo;
-        this.atendida = atendida;
     }
 
     public String getId() {
@@ -59,8 +57,6 @@ public class Cita {
         this.motivo = motivo;
     }
 
-    public boolean isAtendida() {return atendida;}
-    public void setAtendida(boolean atendida) {this.atendida = atendida;}
 
     @Override
     public String toString(){
