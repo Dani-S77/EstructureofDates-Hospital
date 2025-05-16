@@ -57,12 +57,6 @@ public class Cita {
         this.motivo = motivo;
     }
 
-
-    @Override
-    public String toString(){
-        return "Cita: "+id+"-Paciente: "+paciente.getNombre()+
-                "-Doctor: "+doctor.getNombre()+ "-Fecha: "+fecha;
-    }
 }
 
 

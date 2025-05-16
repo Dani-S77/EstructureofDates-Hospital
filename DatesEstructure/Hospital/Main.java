@@ -1,4 +1,7 @@
 import structure.Arboles.ArbolPacientes;
+import structure.Matrices.Matriz;
+import structure.Pilas.PilaUnidimensional;
+import structure.listas.ListaEnlazada;
 import structure.listas.ListaSimple;
 import Modelo.Cita;
 import Modelo.Doctor;
@@ -19,8 +22,10 @@ public class Main {
     private static ListaSimple<Doctor> doctores = new ListaSimple<>();
     private static ListaSimple<Cita> citas = new ListaSimple<>();
     private static ListaSimple<Tratamiento> tratamientos = new ListaSimple<>();
-    private static Map<String, Paciente> mapaPacientes = new HashMap<>();
+    private static ListaEnlazada mapaPacientes = new ListaEnlazada();
     private static Map<String, Doctor> mapaDoctores = new HashMap<>();
+    private static PilaUnidimensional pilaCitas = new PilaUnidimensional();
+    private static Matriz habitaciones = new Matriz();
 
     public static void main(String[] args) {
         // Agregar algunos datos de ejemplo
@@ -31,7 +36,7 @@ public class Main {
     }
 
     private static void inicializarDatos() {
-        // Crear doctores de ejemplo
+        // Doctores de ejemplo
         Doctor doc1 = new Doctor("D001", "Juan", "Pérez", "Cardiología", "5555551234");
         Doctor doc2 = new Doctor("D002", "María", "Gómez", "Pediatría", "5555552345");
         Doctor doc3 = new Doctor("D003", "Carlos", "Rodríguez", "Traumatología", "5555553456");
@@ -53,7 +58,8 @@ public class Main {
                     "3. Registrar tratamiento",
                     "4. Buscar paciente",
                     "5. Listar pacientes",
-                    "6. Salir"
+                    "6. Habitaciones Disponibles",
+                    "7. Salir"
             };
 
             do {
@@ -86,11 +92,14 @@ public class Main {
                         listarPacientes();
                         break;
                     case 5://"6. Salir":
+                        habitacionesDisponibles();
+                        break;
+                    case 6://"6. Salir":
                         break;
                     default:
-                        seleccion = 5;
+                        seleccion = 6;
                 }
-            } while (seleccion != 5);
+            } while (seleccion != 6);
         }
 
 
@@ -110,7 +119,7 @@ public class Main {
             }
 
 
-        if (mapaPacientes.containsKey(id)) {
+        if (mapaPacientes.buscarPorId(id) != null) {
             JOptionPane.showMessageDialog(null, "Ya existe un paciente con ese ID.");
             return;
         }
@@ -169,7 +178,7 @@ public class Main {
 
         Paciente nuevoPaciente = new Paciente(id, nombre, apellido, edad, genero, direccion, telefono);
         pacientes.insertar(nuevoPaciente);
-        mapaPacientes.put(id, nuevoPaciente);
+        mapaPacientes.agregar(nuevoPaciente);
 
         JOptionPane.showMessageDialog(null, "Paciente registrado exitosamente:\n" + nuevoPaciente);
     }
@@ -179,7 +188,7 @@ public class Main {
         LocalDateTime fecha;
         String motivo;
 
-        if (mapaPacientes.isEmpty()) {
+        if (mapaPacientes.getTamaño() == 0) {
             JOptionPane.showMessageDialog(null, "No hay pacientes registrados. Debe registrar un paciente primero.");
             return;
         }
@@ -187,13 +196,12 @@ public class Main {
         String idPaciente = JOptionPane.showInputDialog("ID del paciente:");
         if (idPaciente == null) return;
 
-        Paciente paciente = mapaPacientes.get(idPaciente);
+        Paciente paciente = mapaPacientes.buscarPorId(idPaciente);
         if (paciente == null) {
             JOptionPane.showMessageDialog(null, "Paciente no encontrado.");
             return;
         }
 
-        // Crear una lista con los doctores para seleccionar
         String[] opcionesDoctor = new String[doctores.getSize()];
         for (int i = 0; i < doctores.getSize(); i++) {
             Doctor doctor = doctores.obtener(i);
@@ -235,11 +243,13 @@ public class Main {
             } else break;
         }
 
-        String idCita = "C" + (citas.getSize() + 1);
+        String idCita = "C" + (pilaCitas.espacioDisponible()+1);
         Cita nuevaCita = new Cita(idCita, paciente, doctor, fecha, motivo);
-        citas.agregar(nuevaCita);
-
-        JOptionPane.showMessageDialog(null, "Cita agendada exitosamente:\n" + nuevaCita);
+        if (pilaCitas.apilar(nuevaCita)) {
+            JOptionPane.showMessageDialog(null, "Cita agendada exitosamente:\n" + nuevaCita);
+        } else {
+            JOptionPane.showMessageDialog(null, "No se pudo agendar la cita. La pila está llena.");
+        }
     }
 
     private static void registrarTratamiento() {
@@ -247,7 +257,7 @@ public class Main {
         LocalDate fechaInicio;
         LocalDate fechaFin;
 
-        if (mapaPacientes.isEmpty()) {
+        if (mapaPacientes.getTamaño() == 0) {
             JOptionPane.showMessageDialog(null, "No hay pacientes registrados. Debe registrar un paciente primero.");
             return;
         }
@@ -255,7 +265,7 @@ public class Main {
         String idPaciente = JOptionPane.showInputDialog("ID del paciente:");
         if (idPaciente == null) return;
 
-        Paciente paciente = mapaPacientes.get(idPaciente);
+        Paciente paciente = mapaPacientes.buscarPorId(idPaciente);
         if (paciente == null) {
             JOptionPane.showMessageDialog(null, "Paciente no encontrado.");
             return;
@@ -316,7 +326,7 @@ public class Main {
     }
 
     private static void buscarPaciente() {
-        if (mapaPacientes.isEmpty()) {
+        if (mapaPacientes.getTamaño() == 0) {
             JOptionPane.showMessageDialog(null, "No hay pacientes registrados.");
             return;
         }
@@ -324,7 +334,7 @@ public class Main {
         String idPaciente = JOptionPane.showInputDialog("ID del paciente a buscar:");
         if (idPaciente == null) return;
 
-        Paciente paciente = mapaPacientes.get(idPaciente);
+        Paciente paciente = mapaPacientes.buscarPorId(idPaciente);
         if (paciente == null) {
             JOptionPane.showMessageDialog(null, "Paciente no encontrado.");
             return;
@@ -344,15 +354,17 @@ public class Main {
         // Buscar citas del paciente
         info.append("\nCitas:\n");
         boolean tieneCitas = false;
-        for (int i = 0; i < citas.getSize(); i++) {
-            Cita cita = citas.obtener(i);
-            if (cita.getPaciente().getId().equals(paciente.getId())) {
+
+        for (int i = pilaCitas.cantidad() - 1; i >= 0; i--) {
+            Cita cita = pilaCitas.obtenerPorIndice(i);
+            if (cita != null && cita.getPaciente().getId().equals(paciente.getId())) {
                 info.append("- ").append(cita.getFecha().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")))
                         .append(" con Dr. ").append(cita.getDoctor().getApellido())
                         .append(" (").append(cita.getMotivo()).append(")\n");
                 tieneCitas = true;
             }
         }
+
         if (!tieneCitas) {
             info.append("No tiene citas programadas.\n");
         }
@@ -378,21 +390,23 @@ public class Main {
     }
 
     private static void listarPacientes() {
-        if (mapaPacientes.isEmpty()) {
+        if (mapaPacientes.getTamaño() == 0) {
             JOptionPane.showMessageDialog(null, "No hay pacientes registrados.");
             return;
         }
 
         StringBuilder lista = new StringBuilder("Lista de Pacientes:\n\n");
 
-        for (Paciente paciente : mapaPacientes.values()) {
-            lista.append("ID: ").append(paciente.getId())
-                    .append(" - Nombre: ").append(paciente.getNombre()).append(" ").append(paciente.getApellido())
-                    .append(" - Edad: ").append(paciente.getEdad())
-                    .append(" - Teléfono: ").append(paciente.getTelefono())
-                    .append("\n");
-        }
+        mapaPacientes.mostrarPacientes();
 
         JOptionPane.showMessageDialog(null, lista.toString(), "Lista de Pacientes", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private static void habitacionesDisponibles() {
+        habitaciones.mostrarHabitaciones();
+        int piso = 1 , habitacion = 2;
+       habitaciones.ocuparHabitacion(piso, habitacion);
+        //habitaciones.liberarHabitacion(1, 2);
+        //habitaciones.mostrarHabitaciones();
     }
 }

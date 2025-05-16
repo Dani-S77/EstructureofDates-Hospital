@@ -1,34 +1,72 @@
 package structure.Matrices;
 
-public class Matriz<T> {
-    private Object[][] datos;
-    private  int filas;
-    private int columnas;
 
-    public Matriz(int filas,int columnas){
-        this.filas=filas;
-        this.columnas=columnas;
-        this.datos=new Object[filas][columnas];
+import javax.swing.*;
+
+public class Matriz {
+
+    private boolean[][] habitaciones;
+    private int pisos;
+    private int habitacionesPorPiso;
+
+    public Matriz() {
+        this.pisos = pisos;
+        this.habitacionesPorPiso = habitacionesPorPiso;
+        habitaciones = new boolean[pisos=2][habitacionesPorPiso=5]; // false = disponible
     }
 
-    public void insertar(int fila,int columna, T valor){
-        if(fila>=0 && fila<filas&&columna>=0&&columna<columnas){
-            datos[fila][columna]=valor;
-        }else{
-            throw new IndexOutOfBoundsException("Indices fuera de limites");
+    // Ocupar una habitación
+    public boolean ocuparHabitacion(int piso, int numero) {
+        if (esValida(piso, numero) && !habitaciones[piso][numero]) {
+            habitaciones[piso][numero] = true;
+            return true;
         }
+        return false;
     }
 
-    public int getFilas() {return filas;}
-
-    public int getColumnas() {return columnas;}
-
-    public void imprimir(){
-        for(int i= 0;i<filas;i++){
-             for (int j=0;i<columnas;j++){
-                 System.out.println(datos[i][j]+"\t");
-             }
-            System.out.println();
+    // Liberar una habitación
+    public boolean liberarHabitacion(int piso, int numero) {
+        if (esValida(piso, numero) && habitaciones[piso][numero]) {
+            habitaciones[piso][numero] = false;
+            return true;
         }
+        return false;
+    }
+
+    // Verifica si una habitación está ocupada
+    public boolean estaOcupada(int piso, int numero) {
+        if (esValida(piso, numero)) {
+            return habitaciones[piso][numero];
+        }
+        return false;
+    }
+
+    // Mostrar todas las habitaciones
+    public void mostrarHabitaciones() {
+        StringBuilder mensaje = new StringBuilder();
+        for (int i = 0; i < pisos; i++) {
+            mensaje.append("Piso ").append(i + 1).append(": ");
+            for (int j = 0; j < habitacionesPorPiso; j++) {
+                mensaje.append(habitaciones[i][j] ? "[X] " : "[ ] ");
+            }
+            mensaje.append("\n");
+        }
+        JOptionPane.showMessageDialog(null, mensaje.toString(), "Estado de las Habitaciones", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    // Devuelve cuántas habitaciones están disponibles
+    public int contarDisponibles() {
+        int disponibles = 0;
+        for (int i = 0; i < pisos; i++) {
+            for (int j = 0; j < habitacionesPorPiso; j++) {
+                if (!habitaciones[i][j]) disponibles++;
+            }
+        }
+        return disponibles;
+    }
+
+    // Verifica si una posición es válida
+    private boolean esValida(int piso, int numero) {
+        return piso >= 0 && piso < pisos && numero >= 0 && numero < habitacionesPorPiso;
     }
 }
