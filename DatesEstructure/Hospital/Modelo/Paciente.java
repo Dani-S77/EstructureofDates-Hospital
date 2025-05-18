@@ -9,6 +9,7 @@ public class Paciente {
     private String direccion;
     private String telefono;
     private String historialMedico;
+    private int turno;
 
     public Paciente(String id, String nombre, String apellido,int edad,String genero, String direccion, String telefono){
       this.id=id ;
@@ -19,6 +20,7 @@ public class Paciente {
       this.direccion=direccion;
       this.telefono=telefono;
       this.historialMedico="";
+      this.turno=-1;
     }
 
     public String getId() { return id; }
@@ -44,6 +46,9 @@ public class Paciente {
 
     public String getHistorialMedico() {return historialMedico;}
     public void setHistorialMedico(String nota) { this.historialMedico += nota + "\n";}
+
+    public int getTurno(){return turno;}
+    public void setTurno(int turno){this.turno=turno;}
 
    @Override
     public String toString(){

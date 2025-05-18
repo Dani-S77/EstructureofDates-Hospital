@@ -1,4 +1,5 @@
 import structure.Arboles.ArbolPacientes;
+import structure.Colas.Cola;
 import structure.Matrices.Matriz;
 import structure.Pilas.PilaUnidimensional;
 import structure.listas.ListaEnlazada;
@@ -18,14 +19,15 @@ import java.util.Map;
 
 public class Main {
     // Estructuras de datos para almacenar la información
-    private static ArbolPacientes pacientes = new ArbolPacientes();
-    private static ListaSimple<Doctor> doctores = new ListaSimple<>();
-    private static ListaSimple<Cita> citas = new ListaSimple<>();
-    private static ListaSimple<Tratamiento> tratamientos = new ListaSimple<>();
-    private static ListaEnlazada mapaPacientes = new ListaEnlazada();
-    private static Map<String, Doctor> mapaDoctores = new HashMap<>();
-    private static PilaUnidimensional pilaCitas = new PilaUnidimensional();
-    private static Matriz habitaciones = new Matriz();
+    private static final ArbolPacientes pacientes = new ArbolPacientes();
+    private static final ListaSimple<Doctor> doctores = new ListaSimple<>();
+    private static final ListaSimple<Cita> citas = new ListaSimple<>();
+    private static final ListaSimple<Tratamiento> tratamientos = new ListaSimple<>();
+    private static final ListaEnlazada mapaPacientes = new ListaEnlazada();
+    private static final Map<String, Doctor> mapaDoctores = new HashMap<>();
+    private static final PilaUnidimensional pilaCitas = new PilaUnidimensional();
+    private static final Matriz habitaciones = new Matriz();
+    private static final Cola turno = new Cola();
 
     public static void main(String[] args) {
         // Agregar algunos datos de ejemplo
@@ -57,7 +59,7 @@ public class Main {
                     "2. Agendar cita",
                     "3. Registrar tratamiento",
                     "4. Buscar paciente",
-                    "5. Listar pacientes",
+                    "5. Siguiente paciente",
                     "6. Habitaciones Disponibles",
                     "7. Salir"
             };
@@ -88,13 +90,16 @@ public class Main {
                     case 3://"4. Buscar paciente":
                         buscarPaciente();
                         break;
-                    case 4://"5. Listar pacientes":
+                    /*case 4://"5. Listar pacientes":
                         listarPacientes();
+                        break;*/
+                    case 4: // Lista de espera
+                        turnoEspera();
                         break;
-                    case 5://"6. Salir":
+                    case 5://"6. habitaciones disponibles":
                         habitacionesDisponibles();
                         break;
-                    case 6://"6. Salir":
+                    case 6://"7. Salir":
                         break;
                     default:
                         seleccion = 6;
@@ -177,9 +182,13 @@ public class Main {
         }
 
         Paciente nuevoPaciente = new Paciente(id, nombre, apellido, edad, genero, direccion, telefono);
+
+        turno.encolar(id);
+        nuevoPaciente.setTurno(turno.obtenerTamaño());
+        JOptionPane.showMessageDialog(null,"Su turno en la cola es: " + nuevoPaciente.getTurno());
+
         pacientes.insertar(nuevoPaciente);
         mapaPacientes.agregar(nuevoPaciente);
-
         JOptionPane.showMessageDialog(null, "Paciente registrado exitosamente:\n" + nuevoPaciente);
     }
 
@@ -246,7 +255,7 @@ public class Main {
         String idCita = "C" + (pilaCitas.espacioDisponible()+1);
         Cita nuevaCita = new Cita(idCita, paciente, doctor, fecha, motivo);
         if (pilaCitas.apilar(nuevaCita)) {
-            JOptionPane.showMessageDialog(null, "Cita agendada exitosamente:\n" + nuevaCita);
+            JOptionPane.showMessageDialog(null, "Cita agendada exitosamente:\n");
         } else {
             JOptionPane.showMessageDialog(null, "No se pudo agendar la cita. La pila está llena.");
         }
@@ -408,5 +417,11 @@ public class Main {
        habitaciones.ocuparHabitacion(piso, habitacion);
         //habitaciones.liberarHabitacion(1, 2);
         //habitaciones.mostrarHabitaciones();
+    }
+
+    private static void turnoEspera() {
+        Paciente pT = mapaPacientes.buscarPorId(turno.desencolar());
+
+        JOptionPane.showMessageDialog(null, "Siguiente Turno:" + pT.getTurno() + " " + pT.getId());
     }
 }
