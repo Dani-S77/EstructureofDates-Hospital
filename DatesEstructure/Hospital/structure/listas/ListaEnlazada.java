@@ -6,7 +6,7 @@ import javax.swing.*;
 
 public class ListaEnlazada {
     private NodoPaciente cabeza;
-    private int tamaño = 0;
+    private int tamano = 0;
 
     // Clase interna Nodo
     private static class NodoPaciente {
@@ -31,12 +31,12 @@ public class ListaEnlazada {
             }
             actual.siguiente = nuevo;
         }
-        tamaño++;
+        tamano++;
     }
 
     // Retorna la cantidad de pacientes registrados
-    public int getTamaño() {
-        return tamaño;
+    public int getTamano() {
+        return tamano;
     }
 
     // Muestra los pacientes registrados (ID, nombre, edad, teléfono)
@@ -71,5 +71,37 @@ public class ListaEnlazada {
             actual = actual.siguiente;
         }
         return null;
+    }
+
+    /**
+     * Elimina un paciente por su ID de la lista enlazada
+     * retorna true si el paciente fue eliminado, false si no se encontró.
+     */
+    public boolean eliminarPorId(String id) {
+        if (cabeza == null) {
+            return false; // Lista vacía
+        }
+
+        // Si el paciente a eliminar es la cabeza
+        if (cabeza.paciente.getId().equals(id)) {
+            cabeza = cabeza.siguiente; // La nueva cabeza es el siguiente nodo
+            tamano--;
+            return true;
+        }
+
+        // Buscar el nodo anterior al que queremos eliminar
+        NodoPaciente actual = cabeza;
+        while (actual.siguiente != null && !actual.siguiente.paciente.getId().equals(id)) {
+            actual = actual.siguiente;
+        }
+
+        // Si encontramos el nodo anterior al que queremos eliminar
+        if (actual.siguiente != null) {
+            actual.siguiente = actual.siguiente.siguiente; // Saltamos el nodo a eliminar
+            tamano--;
+            return true;
+        }
+
+        return false; // Paciente no encontrado
     }
 }
