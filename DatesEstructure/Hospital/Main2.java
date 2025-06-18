@@ -35,7 +35,7 @@ public class Main2 {
 
     public static void main(String[] args) {
         // Inicializar la matriz de habitaciones al inicio del programa
-        inicializarHabitaciones(NUM_PISOS, HABITACIONES_POR_PISO);
+        inicializarHabitaciones(3, 5);
 
         int opcionPrincipal;
         do {
@@ -106,7 +106,7 @@ public class Main2 {
     private static void gestionarHabitaciones() {
         int opcion;
         do {
-            String menuHabitaciones = "GESTIÓN DE HABITACIONES\n\n" +
+            String menuHabitaciones =
                     "1. Ver Estado de Habitaciones\n" +
                     "2. Asignar Habitación\n" +
                     "3. Liberar Habitación\n" +
@@ -667,9 +667,4 @@ public class Main2 {
         }
         JOptionPane.showMessageDialog(null, sb.toString(), "Historial de Consultas", JOptionPane.INFORMATION_MESSAGE);
     }
-
-    // Nota: El ejercicio menciona "árboles" pero no se especifica un caso de uso para ellos.
-    // Si se necesitara, se podría añadir una funcionalidad como un árbol de búsqueda binario
-    // para organizar pacientes por ID de forma eficiente, o un árbol genealógico, etc.
-    // Para este caso, solo se implementan las 4 estructuras solicitadas explícitamente.
 }
