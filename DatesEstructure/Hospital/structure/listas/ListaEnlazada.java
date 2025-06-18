@@ -52,10 +52,10 @@ public class ListaEnlazada {
         while (actual != null) {
             Paciente p = actual.paciente;
             listaPacientes.append("ID: ").append(p.getId())
-                    .append(", Nombre: ").append(p.getNombre()).append(" ").append(p.getApellido())
-                    .append(", Edad: ").append(p.getEdad())
-                    .append(", Teléfono: ").append(p.getTelefono())
-                    .append("\n");
+            .append(p.toString()).append("\n")
+            .append("  Edad: ").append(p.getEdad()).append(", Género: ").append(p.getGenero()).append("\n")
+            .append("  Teléfono: ").append(p.getTelefono()).append(", Dirección: ").append(p.getDireccion()).append("\n")
+            .append("------------------------------------------\n");
             actual = actual.siguiente;
         }
         JOptionPane.showMessageDialog(null, listaPacientes.toString(), "Pacientes", JOptionPane.INFORMATION_MESSAGE);

@@ -261,7 +261,7 @@ public class Main {
 
         Paciente nuevoPaciente = new Paciente(id, nombre, apellido, edad, genero, direccion, telefono);
 
-        turno.encolar(id);
+        turno.encolar(nuevoPaciente);
         nuevoPaciente.setTurno(turno.obtenerTamaño());
         JOptionPane.showMessageDialog(null, "Su turno en la cola es: " + nuevoPaciente.getTurno());
 
@@ -758,8 +758,8 @@ public class Main {
     }
 
     private static void turnoEspera() {
-        Paciente pT = mapaPacientes.buscarPorId(turno.desencolar());
+       // Paciente pT = mapaPacientes.buscarPorId(turno.desencolar());
 
-        JOptionPane.showMessageDialog(null, "Siguiente Turno:" + pT.getTurno() + " " + pT.getId());
+      //  JOptionPane.showMessageDialog(null, "Siguiente Turno:" + pT.getTurno() + " " + pT.getId());
     }
 }

@@ -4,28 +4,27 @@
 import Modelo.Cita;
 import Modelo.Doctor;
 import Modelo.Paciente;
+import structure.Colas.Cola;
 import structure.Pilas.PilaUnidimensional;
+import structure.listas.ListaEnlazada;
 
 import javax.swing.JOptionPane;
 import java.time.LocalDateTime;
-import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import java.util.LinkedList; // Implementa Queue y List
-import java.util.Queue;
 import java.util.Stack;
 
 public class Main2 {
 
     // --- Estructuras de Datos ---
     // Pilas: Manejo del historial de consultas médicas.
-    private static PilaUnidimensional historialConsultas = new PilaUnidimensional();
+    private static final PilaUnidimensional historialConsultas = new PilaUnidimensional();
     // Colas: Organización de turnos para atención.
     // LinkedList implementa la interfaz Queue, por lo que puede usarse para colas.
-    private static Queue<Paciente> colaTurnos = new LinkedList<>();
+    private static final Cola colaTurnos = new Cola();
 
     // Listas Enlazadas: Gestión de pacientes registrados.
     // LinkedList también implementa List y es una lista enlazada.
-    private static LinkedList<Paciente> listaPacientes = new LinkedList<>();
+    private static final ListaEnlazada listaPacientes = new ListaEnlazada();
 
     // Matriz: Representación de habitaciones disponibles en el hospital.
     // 'Disponible' o 'Ocupada'. Podríamos almacenar el ID del paciente si está ocupada.
@@ -33,19 +32,25 @@ public class Main2 {
     private static final int NUM_PISOS = 3; // Ejemplo: 3 pisos
     private static final int HABITACIONES_POR_PISO = 5; // Ejemplo: 5 habitaciones por piso
 
+
     public static void main(String[] args) {
         // Inicializar la matriz de habitaciones al inicio del programa
-        inicializarHabitaciones(3, 5);
+        inicializarHabitaciones();
+        Paciente paciente0 = new Paciente("12","Milton","Romero",19,"Masculino","car77","1234567890");
+        listaPacientes.agregar(paciente0);
 
         int opcionPrincipal;
         do {
-            String menuPrincipal = "SISTEMA DE GESTIÓN HOSPITALARIA\n\n" +
-                    "1. Gestión de Pacientes (Listas Enlazadas)\n" +
-                    "2. Gestión de Turnos (Colas)\n" +
-                    "3. Historial de Consultas (Pilas)\n" +
-                    "4. Gestión de Habitaciones (Matriz)\n" +
-                    "5. Salir\n\n" +
-                    "Seleccione una opción:";
+            String menuPrincipal = """
+                    SISTEMA DE GESTIÓN HOSPITALARIA
+                    
+                    1. Gestión de Pacientes (Listas Enlazadas)
+                    2. Gestión de Turnos (Colas)
+                    3. Historial de Consultas (Pilas)
+                    4. Gestión de Habitaciones (Matriz)
+                    5. Salir
+                    
+                    Seleccione una opción:""";
             String input = JOptionPane.showInputDialog(null, menuPrincipal, "Menú Principal", JOptionPane.PLAIN_MESSAGE);
 
             if (input == null) { // Si el usuario presiona Cancelar o cierra el diálogo
@@ -85,15 +90,15 @@ public class Main2 {
     }
 
     // --- Métodos de Gestión de Habitaciones (Matriz) ---
-    private static void inicializarHabitaciones(int pisos, int habitacionesPorPiso) {
-        habitacionesHospital = new String[pisos][habitacionesPorPiso];
-        for (int i = 0; i < pisos; i++) {
-            for (int j = 0; j < habitacionesPorPiso; j++) {
+    private static void inicializarHabitaciones() {
+        habitacionesHospital = new String[3][5];
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 5; j++) {
                 habitacionesHospital[i][j] = "Disponible"; // Todas las habitaciones están disponibles al inicio
             }
         }
         // Para propósitos de demostración, ocupamos algunas habitaciones
-        if (pisos > 0 && habitacionesPorPiso > 0) {
+        if (3 > 0 && 5 > 0) {
             if (habitacionesHospital.length > 0 && habitacionesHospital[0].length > 0) {
                 habitacionesHospital[0][0] = "Ocupada (Paciente P001)";
             }
@@ -107,11 +112,13 @@ public class Main2 {
         int opcion;
         do {
             String menuHabitaciones =
-                    "1. Ver Estado de Habitaciones\n" +
-                    "2. Asignar Habitación\n" +
-                    "3. Liberar Habitación\n" +
-                    "4. Volver al Menú Principal\n\n" +
-                    "Seleccione una opción:";
+                    """
+                            1. Ver Estado de Habitaciones
+                            2. Asignar Habitación
+                            3. Liberar Habitación
+                            4. Volver al Menú Principal
+                            
+                            Seleccione una opción:""";
             String input = JOptionPane.showInputDialog(null, menuHabitaciones, "Gestión de Habitaciones", JOptionPane.PLAIN_MESSAGE);
 
             if (input == null) {
@@ -150,7 +157,7 @@ public class Main2 {
         StringBuilder sb = new StringBuilder("ESTADO DE HABITACIONES\n\n");
         sb.append("Piso \\ Hab |");
         for (int j = 0; j < HABITACIONES_POR_PISO; j++) {
-            sb.append(String.format(" %-10s |", "Hab " + (j + 1)));
+            sb.append(String.format(" %-13s |", "Hab " + (j + 1)));
         }
         sb.append("\n------------");
         for (int j = 0; j < HABITACIONES_POR_PISO; j++) {
@@ -178,14 +185,9 @@ public class Main2 {
 
             if (piso >= 0 && piso < NUM_PISOS && habitacion >= 0 && habitacion < HABITACIONES_POR_PISO) {
                 if (habitacionesHospital[piso][habitacion].equals("Disponible")) {
+
                     // Opcional: Verificar si el paciente existe en listaPacientes
-                    Paciente pEncontrado = null;
-                    for (Paciente p : listaPacientes) {
-                        if (p.getId().equalsIgnoreCase(idPaciente)) {
-                            pEncontrado = p;
-                            break;
-                        }
-                    }
+                    Paciente pEncontrado = listaPacientes.buscarPorId(idPaciente);
 
                     if (pEncontrado != null) {
                         habitacionesHospital[piso][habitacion] = "Ocupada (Paciente " + idPaciente + ")";
@@ -234,14 +236,17 @@ public class Main2 {
     private static void gestionarPacientes() {
         int opcion;
         do {
-            String menuPacientes = "GESTIÓN DE PACIENTES (Lista Enlazada)\n\n" +
-                    "1. Registrar Nuevo Paciente\n" +
-                    "2. Ver Lista de Pacientes\n" +
-                    "3. Buscar Paciente por ID\n" +
-                    "4. Actualizar Datos de Paciente\n" +
-                    "5. Eliminar Paciente\n" +
-                    "6. Volver al Menú Principal\n\n" +
-                    "Seleccione una opción:";
+            String menuPacientes = """
+                    GESTIÓN DE PACIENTES (Lista Enlazada)
+                    
+                    1. Registrar Nuevo Paciente
+                    2. Ver Lista de Pacientes
+                    3. Buscar Paciente por ID
+                    4. Actualizar Datos de Paciente
+                    5. Eliminar Paciente
+                    6. Volver al Menú Principal
+                    
+                    Seleccione una opción:""";
             String input = JOptionPane.showInputDialog(null, menuPacientes, "Gestión de Pacientes", JOptionPane.PLAIN_MESSAGE);
 
             if (input == null) {
@@ -287,18 +292,16 @@ public class Main2 {
         if (id == null || id.trim().isEmpty()) return; // Cancelar
 
         // Verificar si el ID ya existe
-        for (Paciente p : listaPacientes) {
-            if (p.getId().equalsIgnoreCase(id)) {
-                JOptionPane.showMessageDialog(null, "Error: Ya existe un paciente con ese ID.", "Error de Registro", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+        if (listaPacientes.buscarPorId(id) != null) {
+            JOptionPane.showMessageDialog(null, "Ya existe un paciente con ese ID.");
+            return;
         }
 
         String nombre = JOptionPane.showInputDialog("Ingrese Nombre del paciente:");
         if (nombre == null) return;
         String apellido = JOptionPane.showInputDialog("Ingrese Apellido del paciente:");
         if (apellido == null) return;
-        int edad = 0;
+        int edad;
         try {
             String edadStr = JOptionPane.showInputDialog("Ingrese Edad del paciente:");
             if (edadStr == null) return;
@@ -315,45 +318,39 @@ public class Main2 {
         if (telefono == null) return;
 
         Paciente nuevoPaciente = new Paciente(id, nombre, apellido, edad, genero, direccion, telefono);
-        listaPacientes.add(nuevoPaciente);
+        listaPacientes.agregar(nuevoPaciente);
         JOptionPane.showMessageDialog(null, "Paciente " + nombre + " " + apellido + " registrado con éxito.", "Registro Exitoso", JOptionPane.INFORMATION_MESSAGE);
     }
 
     private static void mostrarPacientes() {
-        if (listaPacientes.isEmpty()) {
+        if (listaPacientes.getTamano() == 0) {
             JOptionPane.showMessageDialog(null, "No hay pacientes registrados.", "Lista Vacía", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
-        StringBuilder sb = new StringBuilder("LISTA DE PACIENTES REGISTRADOS:\n\n");
-        for (Paciente p : listaPacientes) {
+        //StringBuilder sb = new StringBuilder("LISTA DE PACIENTES REGISTRADOS:\n\n");
+        /*for (Paciente p : listaPacientes) {
             sb.append(p.toString()).append("\n");
             sb.append("  Edad: ").append(p.getEdad()).append(", Género: ").append(p.getGenero()).append("\n");
             sb.append("  Teléfono: ").append(p.getTelefono()).append(", Dirección: ").append(p.getDireccion()).append("\n");
             sb.append("------------------------------------------\n");
-        }
-        JOptionPane.showMessageDialog(null, sb.toString(), "Pacientes Registrados", JOptionPane.INFORMATION_MESSAGE);
+        }*/
+        listaPacientes.mostrarPacientes();
+        //JOptionPane.showMessageDialog(null,, "Pacientes Registrados", JOptionPane.INFORMATION_MESSAGE);
     }
 
     private static void buscarPaciente() {
         String idBuscar = JOptionPane.showInputDialog("Ingrese el ID del paciente a buscar:");
         if (idBuscar == null || idBuscar.trim().isEmpty()) return;
 
-        Paciente pacienteEncontrado = null;
-        for (Paciente p : listaPacientes) {
-            if (p.getId().equalsIgnoreCase(idBuscar)) {
-                pacienteEncontrado = p;
-                break;
-            }
-        }
+        Paciente pacienteEncontrado = listaPacientes.buscarPorId(idBuscar);
 
         if (pacienteEncontrado != null) {
-            StringBuilder sb = new StringBuilder("PACIENTE ENCONTRADO:\n\n");
-            sb.append(pacienteEncontrado.toString()).append("\n");
-            sb.append("  Edad: ").append(pacienteEncontrado.getEdad()).append(", Género: ").append(pacienteEncontrado.getGenero()).append("\n");
-            sb.append("  Dirección: ").append(pacienteEncontrado.getDireccion()).append("\n");
-            sb.append("  Teléfono: ").append(pacienteEncontrado.getTelefono()).append("\n");
-            sb.append("  Historial Médico:\n").append(pacienteEncontrado.getHistorialMedico().isEmpty() ? "    (Vacío)" : pacienteEncontrado.getHistorialMedico());
-            JOptionPane.showMessageDialog(null, sb.toString(), "Resultado de Búsqueda", JOptionPane.INFORMATION_MESSAGE);
+            String sb = "PACIENTE ENCONTRADO:\n\n" + pacienteEncontrado + "\n" +
+                    "  Edad: " + pacienteEncontrado.getEdad() + ", Género: " + pacienteEncontrado.getGenero() + "\n" +
+                    "  Dirección: " + pacienteEncontrado.getDireccion() + "\n" +
+                    "  Teléfono: " + pacienteEncontrado.getTelefono() + "\n" +
+                    "  Historial Médico:\n" + (pacienteEncontrado.getHistorialMedico().isEmpty() ? "    (Vacío)" : pacienteEncontrado.getHistorialMedico());
+            JOptionPane.showMessageDialog(null, sb, "Resultado de Búsqueda", JOptionPane.INFORMATION_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(null, "Paciente con ID " + idBuscar + " no encontrado.", "No Encontrado", JOptionPane.WARNING_MESSAGE);
         }
@@ -363,14 +360,7 @@ public class Main2 {
         String idBuscar = JOptionPane.showInputDialog("Ingrese el ID del paciente a actualizar:");
         if (idBuscar == null || idBuscar.trim().isEmpty()) return;
 
-        Paciente pacienteEncontrado = null;
-        for (Paciente p : listaPacientes) {
-            if (p.getId().equalsIgnoreCase(idBuscar)) {
-                pacienteEncontrado = p;
-                break;
-            }
-        }
-
+        Paciente pacienteEncontrado = listaPacientes.buscarPorId(idBuscar);
         if (pacienteEncontrado != null) {
             String nuevoNombre = JOptionPane.showInputDialog("Nuevo Nombre (" + pacienteEncontrado.getNombre() + "):", pacienteEncontrado.getNombre());
             if (nuevoNombre != null) pacienteEncontrado.setNombre(nuevoNombre);
@@ -406,18 +396,12 @@ public class Main2 {
         String idEliminar = JOptionPane.showInputDialog("Ingrese el ID del paciente a eliminar:");
         if (idEliminar == null || idEliminar.trim().isEmpty()) return;
 
-        Paciente pacienteAEliminar = null;
-        for (Paciente p : listaPacientes) {
-            if (p.getId().equalsIgnoreCase(idEliminar)) {
-                pacienteAEliminar = p;
-                break;
-            }
-        }
+        Paciente pacienteAEliminar = listaPacientes.buscarPorId(idEliminar);
 
         if (pacienteAEliminar != null) {
             int confirm = JOptionPane.showConfirmDialog(null, "¿Está seguro de que desea eliminar a " + pacienteAEliminar.getNombre() + " " + pacienteAEliminar.getApellido() + "?", "Confirmar Eliminación", JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
-                listaPacientes.remove(pacienteAEliminar);
+                listaPacientes.eliminarPorId(idEliminar);
                 JOptionPane.showMessageDialog(null, "Paciente " + pacienteAEliminar.getNombre() + " " + pacienteAEliminar.getApellido() + " eliminado con éxito.", "Eliminación Exitosa", JOptionPane.INFORMATION_MESSAGE);
             }
         } else {
@@ -429,13 +413,16 @@ public class Main2 {
     private static void gestionarTurnos() {
         int opcion;
         do {
-            String menuTurnos = "GESTIÓN DE TURNOS (Cola)\n\n" +
-                    "1. Asignar Turno (Encolar Paciente)\n" +
-                    "2. Atender Siguiente Paciente (Desencolar)\n" +
-                    "3. Ver Próximo Turno\n" +
-                    "4. Ver Todos los Turnos en Cola\n" +
-                    "5. Volver al Menú Principal\n\n" +
-                    "Seleccione una opción:";
+            String menuTurnos = """
+                    GESTIÓN DE TURNOS (Cola)
+                    
+                    1. Asignar Turno (Encolar Paciente)
+                    2. Atender Siguiente Paciente (Desencolar)
+                    3. Ver Próximo Turno
+                    4. Ver Todos los Turnos en Cola
+                    5. Volver al Menú Principal
+                    
+                    Seleccione una opción:""";
             String input = JOptionPane.showInputDialog(null, menuTurnos, "Gestión de Turnos", JOptionPane.PLAIN_MESSAGE);
 
             if (input == null) {
@@ -477,21 +464,15 @@ public class Main2 {
         String idPaciente = JOptionPane.showInputDialog("Ingrese el ID del paciente para asignar turno:");
         if (idPaciente == null || idPaciente.trim().isEmpty()) return;
 
-        Paciente pacienteParaTurno = null;
-        for (Paciente p : listaPacientes) {
-            if (p.getId().equalsIgnoreCase(idPaciente)) {
-                pacienteParaTurno = p;
-                break;
-            }
-        }
+        Paciente pacienteParaTurno = listaPacientes.buscarPorId(idPaciente);
 
         if (pacienteParaTurno != null) {
-            if (colaTurnos.contains(pacienteParaTurno)) {
+            if (colaTurnos.contiene(idPaciente)) {
                 JOptionPane.showMessageDialog(null, "El paciente " + pacienteParaTurno.getNombre() + " ya tiene un turno asignado y está en la cola.", "Advertencia", JOptionPane.WARNING_MESSAGE);
                 return;
             }
-            colaTurnos.offer(pacienteParaTurno); // Añade a la cola
-            pacienteParaTurno.setTurno(colaTurnos.size()); // Asigna un número de turno simple
+            colaTurnos.encolar(pacienteParaTurno); // Añade a la cola
+            pacienteParaTurno.setTurno(colaTurnos.obtenerTamaño()); // Asigna un número de turno simple
             JOptionPane.showMessageDialog(null, "Paciente " + pacienteParaTurno.getNombre() + " añadido a la cola de turnos. Su turno es el #" + pacienteParaTurno.getTurno() + ".", "Turno Asignado", JOptionPane.INFORMATION_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(null, "Paciente con ID " + idPaciente + " no encontrado. Regístrelo primero.", "Paciente No Encontrado", JOptionPane.ERROR_MESSAGE);
@@ -499,11 +480,11 @@ public class Main2 {
     }
 
     private static void atenderSiguienteTurno() {
-        if (colaTurnos.isEmpty()) {
+        if (colaTurnos.estaVacia()) {
             JOptionPane.showMessageDialog(null, "No hay pacientes en la cola de turnos.", "Cola Vacía", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
-        Paciente pacienteAtendido = colaTurnos.poll(); // Saca al primer paciente de la cola
+        Paciente pacienteAtendido = colaTurnos.desencolar(); // Saca al primer paciente de la cola
         if (pacienteAtendido != null) {
             pacienteAtendido.setTurno(-1); // Resetea su turno
             JOptionPane.showMessageDialog(null, "Paciente " + pacienteAtendido.getNombre() + " " + pacienteAtendido.getApellido() + " ha sido atendido.", "Atención de Turno", JOptionPane.INFORMATION_MESSAGE);
@@ -511,23 +492,30 @@ public class Main2 {
     }
 
     private static void verProximoTurno() {
-        if (colaTurnos.isEmpty()) {
+        if (colaTurnos.estaVacia()) {
             JOptionPane.showMessageDialog(null, "No hay pacientes en la cola de turnos.", "Cola Vacía", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
-        Paciente proximoPaciente = colaTurnos.peek(); // Mira al primer paciente sin removerlo
+        Paciente proximoPaciente = colaTurnos.obtenerFrente(); // Mira al primer paciente sin removerlo
         JOptionPane.showMessageDialog(null, "Próximo paciente en turno: " + proximoPaciente.getNombre() + " " + proximoPaciente.getApellido() + " (ID: " + proximoPaciente.getId() + ")", "Próximo Turno", JOptionPane.INFORMATION_MESSAGE);
     }
 
     private static void verTodosLosTurnos() {
-        if (colaTurnos.isEmpty()) {
+        if (colaTurnos.estaVacia()) {
             JOptionPane.showMessageDialog(null, "No hay pacientes en la cola de turnos.", "Cola Vacía", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
         StringBuilder sb = new StringBuilder("PACIENTES EN COLA DE TURNOS:\n\n");
         int i = 1;
-        for (Paciente p : colaTurnos) {
+        Cola colaTemporal = new Cola(); // Necesitas una instancia de tu cola personalizada
+        while (!colaTurnos.estaVacia()) {
+            Paciente p = colaTurnos.desencolar();
             sb.append(i++).append(". ").append(p.getNombre()).append(" ").append(p.getApellido()).append(" (ID: ").append(p.getId()).append(")\n");
+            colaTemporal.encolar(p); // Vuelve a encolar en la temporal
+        }
+        // Ahora la cola original está vacía, pasa los elementos de la temporal a la original
+        while (!colaTemporal.estaVacia()) {
+            colaTurnos.encolar(colaTemporal.desencolar());
         }
         JOptionPane.showMessageDialog(null, sb.toString(), "Cola de Turnos", JOptionPane.INFORMATION_MESSAGE);
     }
@@ -537,13 +525,16 @@ public class Main2 {
     private static void gestionarHistorialConsultas() {
         int opcion;
         do {
-            String menuHistorial = "GESTIÓN DE HISTORIAL DE CONSULTAS (Pila)\n\n" +
-                    "1. Registrar Nueva Consulta (Push)\n" +
-                    "2. Ver Última Consulta (Peek)\n" +
-                    "3. Deshacer Última Consulta (Pop)\n" +
-                    "4. Ver Historial Completo\n" +
-                    "5. Volver al Menú Principal\n\n" +
-                    "Seleccione una opción:";
+            String menuHistorial = """
+                    GESTIÓN DE HISTORIAL DE CONSULTAS (Pila)
+                    
+                    1. Registrar Nueva Consulta (Push)
+                    2. Ver Última Consulta (Peek)
+                    3. Deshacer Última Consulta (Pop)
+                    4. Ver Historial Completo
+                    5. Volver al Menú Principal
+                    
+                    Seleccione una opción:""";
             String input = JOptionPane.showInputDialog(null, menuHistorial, "Historial de Consultas", JOptionPane.PLAIN_MESSAGE);
 
             if (input == null) {
@@ -588,13 +579,7 @@ public class Main2 {
         String idPaciente = JOptionPane.showInputDialog("Ingrese ID del paciente para la consulta:");
         if (idPaciente == null || idPaciente.trim().isEmpty()) return;
 
-        Paciente pacienteCita = null;
-        for (Paciente p : listaPacientes) {
-            if (p.getId().equalsIgnoreCase(idPaciente)) {
-                pacienteCita = p;
-                break;
-            }
-        }
+        Paciente pacienteCita = listaPacientes.buscarPorId(idPaciente);
 
         if (pacienteCita == null) {
             JOptionPane.showMessageDialog(null, "Paciente con ID " + idPaciente + " no encontrado. Registre al paciente primero.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -611,7 +596,7 @@ public class Main2 {
         if (especialidadDoctor == null) return;
         doctorCita = new Doctor("D" + (int)(Math.random()*1000), nombreDoctor, apellidoDoctor, especialidadDoctor); // ID aleatorio simple
 
-        LocalDateTime fechaConsulta = null;
+        LocalDateTime fechaConsulta;
         String fechaStr = JOptionPane.showInputDialog("Ingrese Fecha y Hora de la consulta (YYYY-MM-DD HH:MM):");
         if (fechaStr == null) return;
         try {
