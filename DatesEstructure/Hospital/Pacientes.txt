@@ -1,0 +1,8 @@
+P001,Luiz,Perez,35,Masculino,Calle Falsa 123,5551001
+P002,Maria,Gomez,28,Femenino,Av. Siempre Viva 742,5552002
+P003,Carloz,Lopez,50,Masculino,Blvd. de los Sueños Rotos 45,5553003
+P004,Ana,Martinez,42,Femenino,Carrera 10 #20-30,5554004
+P005,Pedro,Ramirez,15,Masculino,Diagonal 5 #15-25,5555005 
+P007,m,s,18,m,c,3
+P100,Luis,C,12,M,cad555,123456
+1,b,s,1,a,a,1
